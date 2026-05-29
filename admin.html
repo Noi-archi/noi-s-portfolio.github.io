@@ -1,0 +1,2612 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin | SEKI NOI Portfolio</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500&family=Inter:wght@300;400;500;600&display=swap"
+    rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
+
+    :root {
+      --bg: #0c0c0e;
+      --surface: #141416;
+      --surface2: #1c1c1f;
+      --border: #2a2a2e;
+      --text: #e8e8ea;
+      --muted: #6b6b72;
+      --accent: #c8b89a;
+      --danger: #c0604a;
+      --success: #5a9e7a;
+      --radius: 8px;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', 'Noto Sans JP', sans-serif;
+      font-weight: 300;
+      min-height: 100vh;
+      display: flex;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button {
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    input,
+    textarea,
+    select {
+      font-family: inherit;
+    }
+
+    /* Layout */
+    .sidebar {
+      width: 220px;
+      min-height: 100vh;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      padding: 32px 0;
+      position: fixed;
+      top: 0;
+      left: 0;
+    }
+
+    .main {
+      margin-left: 220px;
+      flex: 1;
+      padding: 48px;
+      max-width: 1100px;
+    }
+
+    /* Sidebar */
+    .logo {
+      padding: 0 24px 32px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .logo h1 {
+      font-size: 0.7rem;
+      letter-spacing: 0.3em;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+
+    .logo p {
+      font-size: 0.9rem;
+      letter-spacing: 0.05em;
+      margin-top: 4px;
+      color: var(--text);
+    }
+
+    .nav {
+      padding: 24px 0;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 24px;
+      font-size: 0.78rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all .2s;
+    }
+
+    .nav-item:hover {
+      color: var(--text);
+      background: var(--surface2);
+    }
+
+    .nav-item.active {
+      color: var(--accent);
+      border-left: 2px solid var(--accent);
+    }
+
+    .nav-icon {
+      font-size: 1rem;
+      width: 18px;
+      text-align: center;
+    }
+
+    .sidebar-footer {
+      margin-top: auto;
+      padding: 24px;
+      border-top: 1px solid var(--border);
+    }
+
+    .sidebar-footer a {
+      font-size: 0.72rem;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+    }
+
+    .sidebar-footer a:hover {
+      color: var(--accent);
+    }
+
+    /* Page sections */
+    .section {
+      display: none;
+    }
+
+    .section.active {
+      display: block;
+    }
+
+    .page-title {
+      font-size: 1.6rem;
+      font-weight: 300;
+      letter-spacing: 0.08em;
+      margin-bottom: 8px;
+    }
+
+    .page-sub {
+      font-size: 0.78rem;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+      margin-bottom: 40px;
+    }
+
+    /* Cards & Lists */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      margin-bottom: 16px;
+    }
+
+    .list-item {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      padding: 16px 24px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin-bottom: 10px;
+      transition: .2s;
+    }
+
+    .list-item:hover {
+      border-color: var(--accent);
+      background: var(--surface2);
+    }
+
+    .list-thumb {
+      width: 64px;
+      height: 44px;
+      object-fit: cover;
+      border-radius: 4px;
+      filter: grayscale(60%);
+    }
+
+    .list-meta {
+      flex: 1;
+    }
+
+    .list-meta-title {
+      font-size: 0.9rem;
+      font-weight: 400;
+      margin-bottom: 3px;
+    }
+
+    .list-meta-sub {
+      font-size: 0.72rem;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+    }
+
+    .list-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 8px 18px;
+      border-radius: var(--radius);
+      font-size: 0.78rem;
+      letter-spacing: 0.1em;
+      border: none;
+      transition: .2s;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #0c0c0e;
+      font-weight: 500;
+    }
+
+    .btn-primary:hover {
+      opacity: .85;
+    }
+
+    .btn-secondary {
+      background: var(--surface2);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .btn-danger {
+      background: transparent;
+      color: var(--danger);
+      border: 1px solid var(--danger);
+    }
+
+    .btn-danger:hover {
+      background: var(--danger);
+      color: #fff;
+    }
+
+    .btn-sm {
+      padding: 5px 12px;
+      font-size: 0.72rem;
+    }
+
+    /* Form */
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 20px;
+    }
+
+    .form-group.full {
+      grid-column: 1/-1;
+    }
+
+    label {
+      font-size: 0.72rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    input[type=text],
+    input[type=date],
+    textarea,
+    select {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text);
+      padding: 10px 14px;
+      font-size: 0.88rem;
+      width: 100%;
+      outline: none;
+      transition: .2s;
+    }
+
+    input:focus,
+    textarea:focus {
+      border-color: var(--accent);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 80px;
+      line-height: 1.7;
+    }
+
+    /* File upload */
+    .file-upload-wrap {
+      display: flex;
+      gap: 8px;
+    }
+
+    .file-input-btn {
+      position: relative;
+      overflow: hidden;
+      display: inline-block;
+    }
+
+    .file-input-btn input[type=file] {
+      position: absolute;
+      left: 0;
+      top: 0;
+      opacity: 0;
+      cursor: pointer;
+      height: 100%;
+    }
+
+    /* Section editor */
+    .section-block {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-bottom: 12px;
+      position: relative;
+    }
+
+    .section-block .remove-btn {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      background: none;
+      border: none;
+      color: var(--muted);
+      font-size: 1.1rem;
+      cursor: pointer;
+    }
+
+    .section-block .remove-btn:hover {
+      color: var(--danger);
+    }
+
+    /* Divider */
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 32px 0;
+    }
+
+    /* Toast */
+    .toast-container {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      z-index: 1000;
+    }
+
+    .toast {
+      padding: 12px 20px;
+      border-radius: var(--radius);
+      font-size: 0.82rem;
+      min-width: 220px;
+      animation: slideUp .3s ease;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .toast.success {
+      background: #1a2e22;
+      border: 1px solid var(--success);
+      color: #7dd4a8;
+    }
+
+    .toast.error {
+      background: #2e1a1a;
+      border: 1px solid var(--danger);
+      color: #e07070;
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(10px)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0)
+      }
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 40px;
+    }
+
+    .stat {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 24px;
+    }
+
+    .stat-num {
+      font-size: 2rem;
+      font-weight: 300;
+      color: var(--accent);
+      letter-spacing: -0.02em;
+    }
+
+    .stat-label {
+      font-size: 0.7rem;
+      color: var(--muted);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-top: 4px;
+    }
+
+    .editor-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 28px;
+    }
+
+    .editor-title {
+      font-size: 1.1rem;
+      font-weight: 400;
+    }
+
+    /* badge */
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 20px;
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      background: var(--surface2);
+      color: var(--muted);
+      border: 1px solid var(--border);
+      margin-bottom: 4px;
+    }
+  </style>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+
+<body>
+
+  <aside class="sidebar">
+    <div class="logo">
+      <h1>Portfolio</h1>
+      <p>Admin Panel</p>
+    </div>
+    <nav class="nav">
+      <div class="nav-item active" onclick="showSection('dashboard')" id="nav-dashboard">
+        <span class="nav-icon">◈</span> Dashboard
+      </div>
+      <div class="nav-item" onclick="showSection('journal')" id="nav-journal">
+        <span class="nav-icon">✦</span> Journal
+      </div>
+      <div class="nav-item" onclick="showSection('projects')" id="nav-projects">
+        <span class="nav-icon">◻</span> Projects
+      </div>
+      <div class="nav-item" onclick="showSection('profile')" id="nav-profile">
+        <span class="nav-icon">○</span> Profile
+      </div>
+      <div class="nav-item" onclick="showSection('settings')" id="nav-settings">
+        <span class="nav-icon">⚙</span> Settings
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <a href="../index.html" target="_blank">↗ ポートフォリオを開く</a>
+    </div>
+  </aside>
+
+  <main class="main">
+
+    <!-- Dashboard -->
+    <div class="section active" id="sec-dashboard">
+      <div class="page-title">Dashboard</div>
+      <div class="page-sub">SEKI NOI PORTFOLIO ADMIN</div>
+      <div class="stats">
+        <div class="stat">
+          <div class="stat-num" id="stat-posts">—</div>
+          <div class="stat-label">Journal Posts</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num" id="stat-projects">—</div>
+          <div class="stat-label">Projects</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num">2026</div>
+          <div class="stat-label">Since</div>
+        </div>
+      </div>
+      <div class="card">
+        <p style="font-size:.85rem;line-height:2;color:var(--muted)">
+          このパネルからジャーナル記事の追加・編集・削除、プロジェクト情報の更新、プロフィールの編集ができます。<br>
+          変更はすぐにポートフォリオのHTMLファイルへ反映されます。画像もアップロード可能です。
+        </p>
+      </div>
+    </div>
+
+    <!-- Journal -->
+    <div class="section" id="sec-journal">
+      <div class="editor-header">
+        <div>
+          <div class="page-title">Journal</div>
+          <div class="page-sub">記事の管理</div>
+        </div>
+        <button class="btn btn-primary" onclick="showEditor('journal')" id="btn-new-post">+ 新規投稿</button>
+      </div>
+
+      <!-- Post Editor -->
+      <div id="post-editor" style="display:none">
+        <div class="card">
+          <div class="editor-header">
+            <span class="editor-title" id="editor-title-label">新規投稿</span>
+            <button class="btn btn-secondary btn-sm" onclick="cancelEditor('journal')">✕ キャンセル</button>
+          </div>
+          <input type="hidden" id="edit-post-id">
+          <div class="form-grid">
+            <div class="form-group">
+              <label>タイトル</label>
+              <input type="text" id="post-title" placeholder="記事タイトル">
+            </div>
+            <div class="form-group">
+              <label>日付</label>
+              <input type="text" id="post-date" placeholder="2026.05.25">
+            </div>
+            <div class="form-group full">
+              <label>リード文（要約）</label>
+              <textarea id="post-lead" placeholder="記事の要約・冒頭文"></textarea>
+            </div>
+            <div class="form-group full">
+              <label>サムネイル画像 (URL または アップロード)</label>
+              <div class="file-upload-wrap">
+                <input type="text" id="post-hero" placeholder="https://... または ../images/..." style="flex:1">
+                <div class="file-input-btn btn btn-secondary">
+                  画像アップロード
+                  <input type="file" onchange="uploadImage(this, 'post-hero')" accept="image/*">
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="divider"></div>
+          <div class="editor-header">
+            <span style="font-size:.8rem;color:var(--muted);letter-spacing:.1em">本文セクション</span>
+            <button class="btn btn-secondary btn-sm" onclick="addSection('journal')">+ セクション追加</button>
+          </div>
+          <div style="font-size:0.75rem; color:var(--muted); margin-bottom:16px;">
+            ※ 段落入力欄に <code>[img] ../images/uploads/ファイル名.jpg</code> と入力すると画像として表示されます。
+          </div>
+          <div id="post-sections-container"></div>
+          <div style="display:flex;gap:12px;margin-top:24px;">
+            <button class="btn btn-primary" onclick="savePost()">✓ 保存する</button>
+            <button class="btn btn-secondary" onclick="cancelEditor('journal')">キャンセル</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Post List -->
+      <div id="post-list"></div>
+    </div>
+
+    <!-- Projects -->
+    <div class="section" id="sec-projects">
+      <div class="editor-header">
+        <div>
+          <div class="page-title">Projects</div>
+          <div class="page-sub">プロジェクトの管理</div>
+        </div>
+        <button class="btn btn-primary" onclick="showEditor('project')" id="btn-new-project">+ 新規プロジェクト</button>
+      </div>
+
+      <!-- Project Editor -->
+      <div id="project-editor" style="display:none">
+        <div class="card">
+          <div class="editor-header">
+            <span class="editor-title" id="proj-editor-title-label">新規プロジェクト</span>
+            <button class="btn btn-secondary btn-sm" onclick="cancelEditor('project')">✕ キャンセル</button>
+          </div>
+          <input type="hidden" id="edit-proj-id">
+          <div class="form-grid">
+            <div class="form-group">
+              <label>タイトル</label>
+              <input type="text" id="proj-title" placeholder="プロジェクト名">
+            </div>
+            <div class="form-group">
+              <label>カテゴリ/番号</label>
+              <input type="text" id="proj-number" placeholder="01 / COMMUNITY">
+            </div>
+            <div class="form-group">
+              <label>タグライン (詳細ページ見出し下)</label>
+              <input type="text" id="proj-tagline" placeholder="声で、人と人をつなぐ。">
+            </div>
+            <div class="form-group full">
+              <label>一覧用 説明文</label>
+              <textarea id="proj-desc" style="min-height:50px" placeholder="一覧ページに表示される短い説明"></textarea>
+            </div>
+            <div class="form-group full">
+              <label>カバー画像 (URL または アップロード)</label>
+              <div class="file-upload-wrap">
+                <input type="text" id="proj-hero" placeholder="https://... または ../images/..." style="flex:1">
+                <div class="file-input-btn btn btn-secondary">
+                  画像アップロード
+                  <input type="file" onchange="uploadImage(this, 'proj-hero')" accept="image/*">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="divider"></div>
+          <div class="editor-header">
+            <span style="font-size:.8rem;color:var(--muted);letter-spacing:.1em">詳細ページ本文セクション</span>
+            <button class="btn btn-secondary btn-sm" onclick="addSection('project')">+ セクション追加</button>
+          </div>
+          <div style="font-size:0.75rem; color:var(--muted); margin-bottom:16px;">
+            ※ 段落入力欄に <code>[img] ../images/uploads/ファイル名.jpg</code> と入力すると画像として表示されます。
+          </div>
+          <div id="proj-sections-container"></div>
+          <div style="display:flex;gap:12px;margin-top:24px;">
+            <button class="btn btn-primary" onclick="saveProject()">✓ 保存する</button>
+            <button class="btn btn-secondary" onclick="cancelEditor('project')">キャンセル</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Project List -->
+      <div id="project-list"></div>
+    </div>
+
+    <!-- Profile -->
+    <div class="section" id="sec-profile">
+      <div class="page-title">Profile</div>
+      <div class="page-sub">プロフィール情報の編集</div>
+
+      <!-- Basic Info -->
+      <div class="card" style="margin-bottom:12px">
+        <div
+          style="font-size:0.75rem;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;margin-bottom:20px">
+          基本情報</div>
+        <div class="form-group">
+          <label>タグライン（肩書き）</label>
+          <input type="text" id="prof-tagline" placeholder="Architecture Student / Designer">
+        </div>
+        <div class="form-group">
+          <label>自己紹介文</label>
+          <textarea id="prof-summary" style="min-height:120px" placeholder="自己紹介文を入力..."></textarea>
+        </div>
+        <div class="form-group">
+          <label>プロフィール写真 URL</label>
+          <div class="file-upload-wrap">
+            <input type="text" id="prof-photo" placeholder="images/profile.jpg または https://..." style="flex:1">
+            <div class="file-input-btn btn btn-secondary">
+              写真アップロード
+              <input type="file" onchange="uploadImage(this, 'prof-photo')" accept="image/*">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Contact & SNS -->
+      <div class="card" style="margin-bottom:12px">
+        <div
+          style="font-size:0.75rem;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;margin-bottom:20px">
+          連絡先・SNS</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>メールアドレス</label>
+            <input type="text" id="prof-email" placeholder="contact@example.com">
+          </div>
+          <div class="form-group">
+            <label>Instagram URL</label>
+            <input type="text" id="prof-instagram" placeholder="https://instagram.com/...">
+          </div>
+          <div class="form-group">
+            <label>X (Twitter) URL</label>
+            <input type="text" id="prof-twitter" placeholder="https://x.com/...">
+          </div>
+          <div class="form-group">
+            <label>Behance URL</label>
+            <input type="text" id="prof-behance" placeholder="https://behance.net/...">
+          </div>
+        </div>
+      </div>
+
+      <!-- Timeline (Roots) -->
+      <div class="card" style="margin-bottom:12px">
+        <div class="editor-header" style="margin-bottom:20px">
+          <div style="font-size:0.75rem;color:var(--muted);letter-spacing:.12em;text-transform:uppercase">Roots Timeline
+          </div>
+          <button class="btn btn-secondary btn-sm" onclick="addTimelineItem()">+ 追加</button>
+        </div>
+        <div id="timeline-editor"></div>
+      </div>
+
+      <!-- Personal Details -->
+      <div class="card" style="margin-bottom:12px">
+        <div
+          style="font-size:0.75rem;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;margin-bottom:20px">
+          Personal Details</div>
+        <div id="details-editor"></div>
+      </div>
+
+      <!-- Skills -->
+      <div class="card" style="margin-bottom:24px">
+        <div
+          style="font-size:0.75rem;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;margin-bottom:20px">
+          Capabilities &amp; Skills</div>
+        <div id="skills-editor"></div>
+      </div>
+
+      <button class="btn btn-primary" style="padding:12px 32px" onclick="saveProfile()">✓ すべて保存する</button>
+    </div>
+
+    <!-- Settings -->
+    <div class="section" id="sec-settings">
+      <div class="page-title">Settings</div>
+      <div class="page-sub">外部アップロード・API連携設定</div>
+
+      <!-- GitHub API Sync Settings -->
+      <div class="card" style="margin-bottom:12px">
+        <div style="font-size:0.75rem;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;margin-bottom:20px">GitHub API 同期設定</div>
+        
+        <div class="form-group" style="margin-bottom:16px">
+          <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-weight:300;">
+            <input type="checkbox" id="setting-github-sync" style="width:16px; height:16px;">
+            GitHub API同期モードを有効にする
+          </label>
+          <span style="font-size:0.7rem;color:var(--muted);margin-top:4px;display:block">
+            有効にすると、ローカルサーバーではなくGitHub上のリポジトリからデータを読み込み、直接コミットして更新するようになります。
+          </span>
+        </div>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label>GitHub ユーザー名 / 組織名</label>
+            <input type="text" id="setting-github-user" placeholder="Noi-archi">
+          </div>
+          <div class="form-group">
+            <label>リポジトリ名</label>
+            <input type="text" id="setting-github-repo" placeholder="portfolio">
+          </div>
+          <div class="form-group">
+            <label>ブランチ名</label>
+            <input type="text" id="setting-github-branch" placeholder="main" value="main">
+          </div>
+          <div class="form-group">
+            <label>Personal Access Token (PAT)</label>
+            <input type="password" id="setting-github-token" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
+          </div>
+        </div>
+        <span style="font-size:0.72rem;color:var(--muted);margin-top:6px;display:block">
+          ※ トークンにはリポジトリ書き込み権限（<code>contents: write</code> または <code>repo</code>）が必要です。トークンはブラウザの localStorage にローカル保存され、外部サーバーには送信されません。
+        </span>
+      </div>
+
+      <div class="card" style="margin-bottom:12px">
+        <div class="form-group">
+          <label>画像アップロード先選択</label>
+          <select id="setting-upload-method"
+            style="background:var(--surface2);color:var(--text);border:1px solid var(--border);border-radius:var(--radius);padding:10px;width:100%;font-weight:300;"
+            onchange="toggleUploadMethodUI()">
+            <option value="local">ローカルサーバー / GitHub (Default)</option>
+            <option value="imgbb">ImgBB (外部画像ホスティング)</option>
+            <option value="imgur">Imgur (外部画像ホスティング)</option>
+            <option value="gdrive">Google Drive (個人ドライブへのアップロード)</option>
+          </select>
+        </div>
+      </div>
+
+
+      <!-- ImgBB API Key -->
+      <div class="card" id="setting-card-imgbb" style="display:none; margin-bottom:12px;">
+        <div class="form-group" style="margin-bottom:12px">
+          <label>ImgBB APIキー</label>
+          <input type="text" id="setting-imgbb-key" placeholder="APIキーを入力">
+          <span style="font-size:0.75rem;color:var(--muted);margin-top:6px;display:block">
+            <a href="https://api.imgbb.com/" target="_blank"
+              style="color:var(--accent); text-decoration: underline;">こちらから無料でAPIキーを取得</a>できます。
+          </span>
+        </div>
+      </div>
+
+      <!-- Imgur Client ID -->
+      <div class="card" id="setting-card-imgur" style="display:none; margin-bottom:12px;">
+        <div class="form-group" style="margin-bottom:12px">
+          <label>Imgur Client ID</label>
+          <input type="text" id="setting-imgur-id" placeholder="Client IDを入力">
+          <span style="font-size:0.75rem;color:var(--muted);margin-top:6px;display:block">
+            <a href="https://api.imgur.com/oauth2/addclient" target="_blank"
+              style="color:var(--accent); text-decoration: underline;">こちらからImgurのアプリ登録</a>を行い、Client
+            IDを取得してください（Anonymous / OAuth 2 authorization without a callback URL を選択）。
+          </span>
+        </div>
+      </div>
+
+      <!-- Google Drive Client ID -->
+      <div class="card" id="setting-card-gdrive" style="display:none; margin-bottom:12px;">
+        <div class="form-group" style="margin-bottom:12px">
+          <label>Google Drive OAuth Client ID</label>
+          <input type="text" id="setting-gdrive-client-id" placeholder="Client IDを入力">
+          <span style="font-size:0.75rem;color:var(--muted);margin-top:6px;display:block">
+            Google Cloud Consoleでプロジェクトを作成し、Google Drive APIを有効化の上、OAuth 2.0 クライアント IDを取得してください（承認済みのJavaScript生成元に
+            <code>http://localhost:3001</code> や <code>file://</code> を設定してください）。
+          </span>
+        </div>
+      </div>
+
+      <button class="btn btn-primary" style="padding:12px 32px" onclick="saveSettings()">✓ 設定を保存する</button>
+    </div>
+
+  </main>
+
+  <div class="toast-container" id="toast-container"></div>
+
+  <script>
+    // ─── API Config ───────────────────────────────────────────
+    const API_BASE = window.location.protocol === 'file:' ? 'http://localhost:3001' : '';
+
+    // ─── GitHub Sync Config ───────────────────────────────────
+    let gitHubSyncEnabled = false;
+    let gitHubUser = 'Noi-archi';
+    let gitHubRepo = 'portfolio';
+    let gitHubBranch = 'main';
+    let gitHubToken = '';
+
+    // ─── State ────────────────────────────────────────────────
+    let posts = [], projects = [];
+    let settings = { uploadMethod: 'local' };
+
+
+    // ─── GitHub REST API Helpers ─────────────────────────────────
+    async function fetchFileFromGitHub(path) {
+      if (!gitHubToken) throw new Error('GitHub Personal Access Token (PAT) が設定されていません。Settingsタブで設定してください。');
+      const url = `https://api.github.com/repos/${gitHubUser}/${gitHubRepo}/contents/${path}?ref=${gitHubBranch}`;
+      const res = await fetch(url, {
+        headers: {
+          'Authorization': `token ${gitHubToken}`,
+          'Accept': 'application/vnd.github.v3+json',
+          'Cache-Control': 'no-cache'
+        }
+      });
+      if (!res.ok) {
+        if (res.status === 404) return null;
+        const errData = await res.json();
+        throw new Error(errData.message || `Failed to fetch ${path} from GitHub`);
+      }
+      const data = await res.json();
+      return decodeURIComponent(escape(atob(data.content.replace(/\s/g, ''))));
+    }
+
+    async function saveFileToGitHub(path, content, commitMessage) {
+      if (!gitHubToken) throw new Error('GitHub Personal Access Token (PAT) が設定されていません。Settingsタブで設定してください。');
+      
+      let sha = null;
+      try {
+        const url = `https://api.github.com/repos/${gitHubUser}/${gitHubRepo}/contents/${path}?ref=${gitHubBranch}`;
+        const res = await fetch(url, {
+          headers: {
+            'Authorization': `token ${gitHubToken}`,
+            'Accept': 'application/vnd.github.v3+json',
+            'Cache-Control': 'no-cache'
+          }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          sha = data.sha;
+        }
+      } catch (e) {
+        console.log(`File ${path} might not exist yet, or error fetching SHA`);
+      }
+
+      const base64Content = btoa(unescape(encodeURIComponent(content)));
+      const putUrl = `https://api.github.com/repos/${gitHubUser}/${gitHubRepo}/contents/${path}`;
+      const body = {
+        message: commitMessage,
+        content: base64Content,
+        branch: gitHubBranch
+      };
+      if (sha) {
+        body.sha = sha;
+      }
+
+      const putRes = await fetch(putUrl, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `token ${gitHubToken}`,
+          'Content-Type': 'application/json',
+          'Accept': 'application/vnd.github.v3+json'
+        },
+        body: JSON.stringify(body)
+      });
+
+      if (!putRes.ok) {
+        const errData = await putRes.json();
+        throw new Error(errData.message || `Failed to save ${path} to GitHub`);
+      }
+    }
+
+    async function uploadToGitHub(file) {
+      if (!gitHubToken) throw new Error('GitHub Personal Access Token (PAT) が設定されていません。Settingsタブで設定してください。');
+      const ext = file.name.substring(file.name.lastIndexOf('.'));
+      const basename = file.name.substring(0, file.name.lastIndexOf('.'));
+      const filename = `${basename}-${Date.now()}${ext}`;
+      const path = `images/uploads/${filename}`;
+
+      const base64 = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result.split(',')[1]);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+
+      const body = {
+        message: `upload: ${filename}`,
+        content: base64,
+        branch: gitHubBranch
+      };
+
+      const putRes = await fetch(`https://api.github.com/repos/${gitHubUser}/${gitHubRepo}/contents/${path}`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `token ${gitHubToken}`,
+          'Content-Type': 'application/json',
+          'Accept': 'application/vnd.github.v3+json'
+        },
+        body: JSON.stringify(body)
+      });
+
+      if (!putRes.ok) {
+        const errData = await putRes.json();
+        throw new Error(errData.message || `Failed to upload image to GitHub`);
+      }
+
+      return `../images/uploads/${filename}`;
+    }
+
+    async function deleteFileFromGitHub(path, commitMessage) {
+      if (!gitHubToken) throw new Error('GitHub Personal Access Token (PAT) が設定されていません。Settingsタブで設定してください。');
+      
+      let sha = null;
+      const url = `https://api.github.com/repos/${gitHubUser}/${gitHubRepo}/contents/${path}?ref=${gitHubBranch}`;
+      const res = await fetch(url, {
+        headers: {
+          'Authorization': `token ${gitHubToken}`,
+          'Accept': 'application/vnd.github.v3+json',
+          'Cache-Control': 'no-cache'
+        }
+      });
+      if (!res.ok) {
+        if (res.status === 404) return;
+        const errData = await res.json();
+        throw new Error(errData.message || `Failed to fetch SHA for deleting ${path}`);
+      }
+      const data = await res.json();
+      sha = data.sha;
+
+      const delRes = await fetch(`https://api.github.com/repos/${gitHubUser}/${gitHubRepo}/contents/${path}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `token ${gitHubToken}`,
+          'Content-Type': 'application/json',
+          'Accept': 'application/vnd.github.v3+json'
+        },
+        body: JSON.stringify({
+          message: commitMessage,
+          sha: sha,
+          branch: gitHubBranch
+        })
+      });
+
+      if (!delRes.ok) {
+        const errData = await delRes.json();
+        throw new Error(errData.message || `Failed to delete ${path} from GitHub`);
+      }
+    }
+
+    // ─── DOMParser-based HTML Generation/Parsing Helpers ──────────
+    function pad(n) { return String(n).padStart(2, '0'); }
+
+    function normalizeImagePath(src) {
+      if (!src) return '';
+      if (src.startsWith('http://') || src.startsWith('https://') || src.startsWith('/')) return src;
+      return src.replace(/^\.\.\//, '');
+    }
+
+    function normalizeSubdirImagePath(src) {
+      if (!src) return '';
+      if (src.startsWith('http://') || src.startsWith('https://') || src.startsWith('/')) return src;
+      if (src.startsWith('images/')) return '../' + src;
+      if (src.startsWith('../')) return src;
+      return src;
+    }
+
+    function parseJournalHTML(htmlText, filename) {
+      try {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(htmlText, 'text/html');
+        
+        const titleEl = doc.querySelector('.post-header h1') || doc.querySelector('h1');
+        const title = titleEl ? titleEl.textContent.trim() : '';
+        const dateEl = doc.querySelector('.post-date') || doc.querySelector('.hero-content p');
+        const date = dateEl ? dateEl.textContent.trim() : '';
+        const leadEl = doc.querySelector('.post-lead');
+        const lead = leadEl ? leadEl.textContent.trim() : '';
+        const heroImgEl = doc.querySelector('.post-hero-img');
+        const heroImg = heroImgEl ? heroImgEl.getAttribute('src') || '' : '';
+        
+        const bodyContainer = doc.querySelector('.post-body');
+        const sections = [];
+        if (bodyContainer) {
+          let currentSection = { heading: '', paragraphs: [] };
+          Array.from(bodyContainer.children).forEach(el => {
+            const tagName = el.tagName.toLowerCase();
+            if (tagName === 'h2') {
+              if (currentSection.paragraphs.length > 0 || currentSection.heading !== '') {
+                sections.push(currentSection);
+              }
+              currentSection = { heading: el.textContent.trim(), paragraphs: [] };
+            } else if (tagName === 'p') {
+              const text = el.textContent.trim();
+              if (text) {
+                currentSection.paragraphs.push(text);
+              }
+            } else if (tagName === 'figure' || el.classList.contains('blog-photo')) {
+              const img = el.querySelector('img');
+              const imgUrl = img ? img.getAttribute('src') || '' : '';
+              if (imgUrl) {
+                currentSection.paragraphs.push(`[img] ${imgUrl}`);
+              }
+            }
+          });
+          if (currentSection.paragraphs.length > 0 || currentSection.heading !== '') {
+            sections.push(currentSection);
+          }
+        }
+        return { filename, title, date, lead, heroImg, sections };
+      } catch (e) {
+        console.error(`Error parsing journal HTML ${filename}:`, e);
+        return null;
+      }
+    }
+
+    function parseProjectHTML(htmlText, filename) {
+      try {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(htmlText, 'text/html');
+        
+        const taglineEl = doc.querySelector('.blog-hero .tagline');
+        const tagline = taglineEl ? taglineEl.textContent.trim() : '';
+        const imageEl = doc.querySelector('.blog-cover img');
+        const image = imageEl ? imageEl.getAttribute('src') || '' : '';
+        const bodyContainer = doc.querySelector('.blog-body');
+        if (!bodyContainer) return { tagline, image, sections: [] };
+
+        const sections = [];
+        let currentSection = { heading: '', paragraphs: [] };
+
+        Array.from(bodyContainer.children).forEach(el => {
+          const tagName = el.tagName.toLowerCase();
+          if (tagName === 'h2') {
+            if (currentSection.paragraphs.length > 0 || currentSection.heading !== '') {
+              sections.push(currentSection);
+            }
+            currentSection = { heading: el.textContent.trim(), paragraphs: [] };
+          } else if (tagName === 'p') {
+            const text = el.textContent.trim();
+            if (text) {
+              currentSection.paragraphs.push(text);
+            }
+          } else if (tagName === 'figure' || el.classList.contains('blog-photo')) {
+            const img = el.querySelector('img');
+            const imgUrl = img ? img.getAttribute('src') || '' : '';
+            if (imgUrl) {
+              currentSection.paragraphs.push(`[img] ${imgUrl}`);
+            }
+          }
+        });
+        if (currentSection.paragraphs.length > 0 || currentSection.heading !== '') {
+          sections.push(currentSection);
+        }
+        return { tagline, image, sections };
+      } catch (e) {
+        console.error(`Error parsing project HTML ${filename}:`, e);
+        return { tagline: '', image: '', sections: [] };
+      }
+    }
+
+    function generatePostHTML(post, allPosts) {
+      const idx = allPosts.findIndex(p => p.id === post.id);
+      const prev = idx < allPosts.length - 1 ? allPosts[idx + 1] : null;
+      const next = idx > 0 ? allPosts[idx - 1] : null;
+
+      const bodySections = (post.sections || []).map(s => {
+        const textHtml = (s.paragraphs || []).map(p => {
+          if (p.startsWith('[img]')) {
+            const url = p.replace('[img]', '').trim();
+            return `<figure class="blog-photo fade-item"><img src="${normalizeSubdirImagePath(url)}" alt=""></figure>`;
+          }
+          return `<p class="fade-item">${p}</p>`;
+        }).join('\n                ');
+        return `
+                    ${s.heading ? `<h2 class="fade-item">${s.heading}</h2>` : ''}
+                    ${textHtml}`;
+      }).join('');
+
+      const prevLink = prev ? `<a href="${prev.filename}">← Previous Post</a>` : `<a href="journal.html">← Back to Journal</a>`;
+      const nextLink = next ? `<a href="${next.filename}">Next Post →</a>` : '';
+
+      return `<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${post.title} | SEKI NOI Journal</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500&family=Noto+Serif+JP:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        .post-detail { padding: 100px 0 140px; }
+        .post-header { max-width: 720px; margin: 0 auto 72px; }
+        .post-date { font-size: 0.75rem; letter-spacing: 0.3em; color: var(--light-gray); display: block; margin-bottom: 20px; }
+        .post-header h1 { font-size: clamp(1.6rem, 3.5vw, 2.6rem); font-weight: 300; letter-spacing: 0.1em; line-height: 1.5; margin-bottom: 32px; }
+        .post-header .post-lead { font-size: 1rem; font-weight: 300; line-height: 2; color: var(--light-gray); border-left: 2px solid var(--accent-gray); padding-left: 24px; }
+        .post-hero-img { width: 100%; aspect-ratio: 16/9; object-fit: cover; filter: grayscale(100%) contrast(110%); margin-bottom: 80px; transition: filter 0.8s ease; }
+        .post-hero-img:hover { filter: grayscale(0%); }
+        .post-body { max-width: 720px; margin: 0 auto; }
+        .post-body h2 { font-size: 0.82rem; letter-spacing: 0.3em; margin-bottom: 24px; text-align: left; color: var(--light-gray); margin-top: 64px; }
+        .post-body p { font-size: 1rem; font-weight: 300; line-height: 2.4; color: #525252; margin-bottom: 40px; }
+        .blog-photo { width: 100%; margin: 48px 0; overflow: hidden; }
+        .blog-photo img { width: 100%; height: auto; object-fit: cover; display: block; }
+        .post-nav { display: flex; justify-content: space-between; padding: 60px 0; border-top: 1px solid var(--accent-gray); margin-top: 80px; }
+        .post-nav a { font-size: 0.8rem; letter-spacing: 0.2em; text-transform: uppercase; }
+    </style>
+</head>
+<body>
+    <nav class="navigation">
+        <a href="../index.html#hero">TOP</a>
+        <a href="../profile.html">PROFILE</a>
+        <a href="../Project/projects.html">PROJECTS</a>
+        <a href="../Journal/journal.html" class="nav-current">JOURNAL</a>
+        <a href="../index.html#contact">CONTACT</a>
+    </nav>
+
+    <section class="hero hero--sub fade-in-section">
+        <div class="hero-content">
+            <h1>JOURNAL</h1>
+            <p>${post.date}</p>
+        </div>
+    </section>
+
+    <section class="post-detail fade-in-section">
+        <div class="container">
+            <div class="post-header fade-item">
+                <span class="post-date">${post.date}</span>
+                <h1>${post.title}</h1>
+                <p class="post-lead">${post.lead}</p>
+            </div>
+
+            <img src="${normalizeSubdirImagePath(post.heroImg)}" alt="${post.title}" class="post-hero-img fade-item">
+
+            <div class="post-body">
+                ${bodySections}
+            </div>
+
+            <div class="post-nav">
+                ${prevLink}
+                ${nextLink}
+            </div>
+        </div>
+    </section>
+
+    <footer><p>&copy; 2026 SEKI NOI. All rights reserved.</p></footer>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const so = new IntersectionObserver((e) => { e.forEach(en => { if (en.isIntersecting) en.target.classList.add('is-visible'); }); }, { threshold: 0.08 });
+            document.querySelectorAll('.fade-in-section').forEach(el => so.observe(el));
+            const io = new IntersectionObserver((e) => { e.forEach(en => { if (en.isIntersecting) { en.target.classList.add('is-visible'); io.unobserve(en.target); } }); }, { threshold: 0.12, rootMargin: '0px 0px -30px 0px' });
+            document.querySelectorAll('.fade-item').forEach(el => io.observe(el));
+            const hero = document.querySelector('.hero--sub');
+            if (hero) requestAnimationFrame(() => hero.classList.add('is-visible'));
+        });
+    </script>
+</body>
+</html>`;
+    }
+
+    function generateJournalListHTML(posts) {
+      const cards = posts.map((post, i) => {
+        const delay = i === 0 ? '' : ` delay-${Math.min(i, 3)}`;
+        return `
+                <a href="${post.filename}" class="project-card fade-item${delay} project-card-link">
+                    <div class="image-wrapper">
+                        <img src="${normalizeSubdirImagePath(post.heroImg)}" alt="${post.title}">
+                    </div>
+                    <div class="project-info">
+                        <h3>${post.date} / ${post.title}</h3>
+                        <p>${post.lead}</p>
+                        <span class="project-view-link">Read Post ↗</span>
+                    </div>
+                </a>`;
+      }).join('\n');
+
+      return `<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JOURNAL | SEKI NOI Portfolio</title>
+    <meta name="description" content="SEKI NOI のジャーナル。建築・旅・思索の記録。">
+    <link rel="stylesheet" href="../style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500&family=Noto+Serif+JP:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="navigation">
+        <a href="../index.html#hero">TOP</a>
+        <a href="../profile.html">PROFILE</a>
+        <a href="../Project/projects.html">PROJECTS</a>
+        <a href="../Journal/journal.html" class="nav-current">JOURNAL</a>
+        <a href="../index.html#contact">CONTACT</a>
+    </nav>
+    <section class="hero hero--sub fade-in-section">
+        <div class="hero-content">
+            <h1>JOURNAL</h1>
+            <p>記録と思索</p>
+        </div>
+    </section>
+    <section class="journal fade-in-section">
+        <div class="container">
+            <h2>ALL POSTS</h2>
+            <div class="project-grid">
+${cards}
+            </div>
+        </div>
+    </section>
+    <footer><p>&copy; 2026 SEKI NOI. All rights reserved.</p></footer>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const so = new IntersectionObserver((entries) => { entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('is-visible'); }); }, { threshold: 0.08 });
+            document.querySelectorAll('.fade-in-section').forEach(el => so.observe(el));
+            const io = new IntersectionObserver((entries) => { entries.forEach(entry => { if (entry.isIntersecting) { entry.target.classList.add('is-visible'); io.unobserve(entry.target); } }); }, { threshold: 0.15, rootMargin: '0px 0px -30px 0px' });
+            document.querySelectorAll('.fade-item').forEach(el => io.observe(el));
+            const hero = document.querySelector('.hero--sub');
+            if (hero) requestAnimationFrame(() => hero.classList.add('is-visible'));
+        });
+    </script>
+</body>
+</html>`;
+    }
+
+    function generateProjectPageHTML(project, allProjects) {
+      const idx = allProjects.findIndex(p => p.id === project.id);
+      const prev = idx > 0 ? allProjects[idx - 1] : null; 
+      const next = idx < allProjects.length - 1 ? allProjects[idx + 1] : null;
+
+      const prevLink = prev ? `<a href="${prev.filename}">← Prev</a>` : `<a href="projects.html">← Back</a>`;
+      const nextLink = next ? `<a href="${next.filename}">Next →</a>` : '';
+
+      const bodySections = (project.sections || []).map(s => {
+        const textHtml = (s.paragraphs || []).map(p => {
+          if (p.startsWith('[img]')) {
+            const url = p.replace('[img]', '').trim();
+            return `<figure class="blog-photo fade-item"><img src="${normalizeSubdirImagePath(url)}" alt=""></figure>`;
+          }
+          return `<p class="fade-item">${p}</p>`;
+        }).join('\n            ');
+        return `
+            ${s.heading ? `<h2 class="fade-item">${s.heading}</h2>` : ''}
+            ${textHtml}`;
+      }).join('');
+
+      return `<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${project.title} | SEKI NOI</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500&family=Noto+Serif+JP:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        .blog-hero { padding: 140px 0 80px; text-align: center; }
+        .blog-hero .category-label { font-size: 0.72rem; letter-spacing: 0.35em; text-transform: uppercase; color: var(--light-gray); display: block; margin-bottom: 28px; }
+        .blog-hero h1 { font-size: clamp(2.4rem, 7vw, 5.5rem); font-weight: 300; letter-spacing: 0.08em; line-height: 1.15; margin-bottom: 28px; }
+        .blog-hero .tagline { font-size: 1.05rem; font-weight: 300; color: var(--light-gray); letter-spacing: 0.08em; }
+        .blog-divider { width: 40px; height: 1px; background: var(--accent-gray); margin: 40px auto; }
+        .blog-cover { width: 100%; max-width: 900px; margin: 0 auto 80px; overflow: hidden; }
+        .blog-cover img { width: 100%; height: 520px; object-fit: cover; display: block; }
+        .blog-body { max-width: 680px; margin: 0 auto; padding: 0 0 120px; }
+        .blog-body p { font-size: 1rem; font-weight: 300; line-height: 2.4; color: #525252; margin-bottom: 48px; }
+        .blog-body h2 { font-size: 1.1rem; font-weight: 400; letter-spacing: 0.08em; margin: 60px 0 20px; color: var(--text-color); }
+        .blog-photo { width: 100%; margin: 48px 0; overflow: hidden; }
+        .blog-photo img { width: 100%; height: auto; max-height: 500px; object-fit: cover; display: block; }
+        .project-nav { display: flex; justify-content: space-between; align-items: center; padding: 60px 0; border-top: 1px solid var(--accent-gray); margin-top: 40px; max-width: 900px; margin-left: auto; margin-right: auto; }
+        .project-nav a { font-size: 0.8rem; letter-spacing: 0.2em; text-transform: uppercase; }
+    </style>
+</head>
+<body>
+    <nav class="navigation">
+        <a href="../index.html#hero">TOP</a>
+        <a href="../profile.html">PROFILE</a>
+        <a href="../Project/projects.html" class="nav-current">PROJECTS</a>
+        <a href="../Journal/journal.html">JOURNAL</a>
+        <a href="../index.html#contact">CONTACT</a>
+    </nav>
+
+    <section class="blog-hero fade-in-section">
+        <div class="container">
+            <span class="category-label">${project.number}</span>
+            <h1 class="fade-item">${project.title}</h1>
+            <p class="tagline fade-item">${project.tagline || ''}</p>
+            <div class="blog-divider"></div>
+        </div>
+    </section>
+
+    <div class="container">
+        <figure class="blog-cover fade-item">
+            <img src="${normalizeSubdirImagePath(project.image)}" alt="${project.title}">
+        </figure>
+    </div>
+
+    <div class="container">
+        <div class="blog-body">
+            ${bodySections}
+        </div>
+    </div>
+
+    <div class="container">
+        <nav class="project-nav fade-item">
+            ${prevLink}
+            ${nextLink}
+        </nav>
+    </div>
+
+    <footer><p>&copy; 2026 SEKI NOI. All rights reserved.</p></footer>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const sectionObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('is-visible'); });
+            }, { threshold: 0.08 });
+            document.querySelectorAll('.fade-in-section').forEach(el => sectionObserver.observe(el));
+            const itemObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) { entry.target.classList.add('is-visible'); itemObserver.unobserve(entry.target); }
+                });
+            }, { threshold: 0.1, rootMargin: '0px 0px -20px 0px' });
+            document.querySelectorAll('.fade-item').forEach(el => itemObserver.observe(el));
+        });
+    </script>
+</body>
+</html>`;
+    }
+
+    function generateProjectListHTML(projects) {
+      const cards = projects.map((p, i) => {
+        const delay = i === 0 ? '' : ` delay-${Math.min(i, 3)}`;
+        return `
+                <div class="project-card fade-item${delay}">
+                    <a href="${p.filename}" class="project-card-link">
+                        <div class="image-wrapper">
+                            <img src="${normalizeSubdirImagePath(p.image)}" alt="${p.title}">
+                        </div>
+                        <div class="project-info">
+                            <span class="project-number">${p.number}</span>
+                            <h3>${p.title}</h3>
+                            <p>${p.description}</p>
+                            <span class="project-view-link">View Project ↗</span>
+                        </div>
+                    </a>
+                </div>`;
+      }).join('\n');
+
+      return `<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PROJECTS | SEKI NOI Portfolio</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500&family=Noto+Serif+JP:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="navigation">
+        <a href="../index.html#hero">TOP</a>
+        <a href="../profile.html">PROFILE</a>
+        <a href="../Project/projects.html" class="nav-current">PROJECTS</a>
+        <a href="../Journal/journal.html">JOURNAL</a>
+        <a href="../index.html#contact">CONTACT</a>
+    </nav>
+    <section class="hero hero--sub fade-in-section">
+        <div class="hero-content">
+            <h1>PROJECTS</h1>
+            <p>Activities & Works</p>
+        </div>
+    </section>
+    <section class="projects fade-in-section">
+        <div class="container">
+            <h2>ALL WORKS</h2>
+            <div class="project-grid">
+${cards}
+            </div>
+        </div>
+    </section>
+    <footer><p>&copy; 2026 SEKI NOI. All rights reserved.</p></footer>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const so = new IntersectionObserver((e) => { e.forEach(en => { if (en.isIntersecting) en.target.classList.add('is-visible'); }); }, { threshold: 0.08 });
+            document.querySelectorAll('.fade-in-section').forEach(el => so.observe(el));
+            const io = new IntersectionObserver((e) => { e.forEach(en => { if (en.isIntersecting) { en.target.classList.add('is-visible'); io.unobserve(en.target); } }); }, { threshold: 0.15, rootMargin: '0px 0px -30px 0px' });
+            document.querySelectorAll('.fade-item').forEach(el => io.observe(el));
+            const hero = document.querySelector('.hero--sub');
+            if (hero) requestAnimationFrame(() => hero.classList.add('is-visible'));
+        });
+    </script>
+</body>
+</html>`;
+    }
+
+    function updateProjectPageHTML(htmlText, project, allProjects) {
+      if (!htmlText) {
+        return generateProjectPageHTML(project, allProjects);
+      }
+
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(htmlText, 'text/html');
+
+      const titleEl = doc.querySelector('title');
+      if (titleEl) titleEl.textContent = `${project.title} | SEKI NOI`;
+      
+      const catEl = doc.querySelector('.category-label');
+      if (catEl) catEl.textContent = project.number || '';
+      
+      const h1El = doc.querySelector('.blog-hero h1') || doc.querySelector('h1');
+      if (h1El) h1El.textContent = project.title;
+
+      const tagEl = doc.querySelector('.blog-hero .tagline');
+      if (tagEl) tagEl.textContent = project.tagline || '';
+
+      const coverImg = doc.querySelector('.blog-cover img');
+      if (coverImg) {
+        coverImg.setAttribute('src', normalizeSubdirImagePath(project.image) || '');
+        coverImg.setAttribute('alt', project.title || '');
+      }
+
+      const idx = allProjects.findIndex(p => p.id === project.id);
+      const prev = idx > 0 ? allProjects[idx - 1] : null;
+      const next = idx < allProjects.length - 1 ? allProjects[idx + 1] : null;
+
+      const navContainer = doc.querySelector('.project-nav');
+      if (navContainer) {
+        let navHtml = `<a href="projects.html">← All Projects</a>`;
+        if (prev) {
+          navHtml = `<a href="${prev.filename}">← Prev</a>` + navHtml;
+        }
+        if (next) {
+          navHtml = navHtml + `<a href="${next.filename}">Next →</a>`;
+        }
+        navContainer.innerHTML = navHtml;
+      }
+
+      const bodyContainer = doc.querySelector('.blog-body');
+      if (bodyContainer) {
+        const bodySections = (project.sections || []).map(s => {
+          const textHtml = (s.paragraphs || []).map(p => {
+            if (p.startsWith('[img]')) {
+              const url = p.replace('[img]', '').trim();
+              return `<figure class="blog-photo fade-item"><img src="${normalizeSubdirImagePath(url)}" alt=""></figure>`;
+            }
+            return `<p class="fade-item">${p}</p>`;
+          }).join('\n            ');
+
+          if (s.heading === '身についたこと' || s.heading === '身に付いたこと') {
+            const keywordSpans = (s.paragraphs || []).map(p => `<span class="blog-keyword">${p}</span>`).join('\n                ');
+            return `
+            <h2 class="fade-item">${s.heading}</h2>
+            <div class="blog-keywords fade-item">
+                ${keywordSpans}
+            </div>`;
+          }
+
+          return `
+            ${s.heading ? `<h2 class="fade-item">${s.heading}</h2>` : ''}
+            ${textHtml}`;
+        }).join('');
+        bodyContainer.innerHTML = '\n' + bodySections + '\n        ';
+      }
+
+      const doctype = doc.doctype ? `<!DOCTYPE html>\n` : '';
+      return doctype + doc.documentElement.outerHTML;
+    }
+
+    function syncIndexHtml(indexHtmlText, projects, posts) {
+      if (!indexHtmlText) return '';
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(indexHtmlText, 'text/html');
+
+      const projectCards = projects.slice(0, 4).map((p, i) => {
+        return `
+                <!-- Project ${i + 1} -->
+                <a href="Project/${p.filename}" class="project-card project-card-link">
+                    <div class="image-wrapper">
+                        <img src="${normalizeImagePath(p.image)}" alt="${p.title}">
+                    </div>
+                    <div class="project-info">
+                        <h3>${p.title}</h3>
+                        <p>${p.description}</p>
+                        <span class="project-view-link">View Project</span>
+                    </div>
+                </a>`;
+      }).join('\n');
+      const projGrid = doc.querySelector('#projects .project-grid');
+      if (projGrid) projGrid.innerHTML = '\n' + projectCards + '\n            ';
+
+      const postCards = posts.slice(0, 2).map((p, i) => {
+        return `
+                <!-- Post ${i + 1} -->
+                <a href="Journal/${p.filename}" class="project-card project-card-link">
+                    <div class="image-wrapper">
+                        <img src="${normalizeImagePath(p.heroImg)}" alt="Journal ${i + 1}">
+                    </div>
+                    <div class="project-info">
+                        <h3>${p.date} / ${p.title}</h3>
+                        <p>${p.lead}</p>
+                        <span class="project-view-link">Read Post</span>
+                    </div>
+                </a>`;
+      }).join('\n');
+      const journalGrid = doc.querySelector('#journal .project-grid');
+      if (journalGrid) journalGrid.innerHTML = '\n' + postCards + '\n            ';
+
+      const doctype = doc.doctype ? `<!DOCTYPE html>\n` : '';
+      return doctype + doc.documentElement.outerHTML;
+    }
+
+    function applyProfileFieldsInDoc(doc, body) {
+      if (body.tagline !== undefined) {
+        const el = doc.querySelector('.profile-tagline');
+        if (el) el.innerHTML = String(body.tagline).replace(/\n/g, '<br>');
+      }
+      if (body.summary !== undefined) {
+        const el = doc.querySelector('.profile-summary');
+        if (el) el.innerHTML = String(body.summary).replace(/\n/g, '<br>');
+      }
+      if (body.photo !== undefined) {
+        const el = doc.querySelector('.profile-photo-img');
+        if (el) el.setAttribute('src', normalizeImagePath(body.photo));
+      }
+      if (body.email) {
+        doc.querySelectorAll('a[href^="mailto:"]').forEach(el => {
+          el.setAttribute('href', `mailto:${body.email}`);
+          if (el.textContent.includes('@')) el.textContent = body.email;
+        });
+      }
+      if (body.instagram) {
+        const el = doc.querySelectorAll('.sns-links a')[0];
+        if (el) el.setAttribute('href', body.instagram);
+      }
+      if (body.twitter) {
+        const el = doc.querySelectorAll('.sns-links a')[1];
+        if (el) el.setAttribute('href', body.twitter);
+      }
+      if (body.behance) {
+        const el = doc.querySelectorAll('.sns-links a')[2];
+        if (el) el.setAttribute('href', body.behance);
+      }
+    }
+
+    function updateProfileHtml(profileHtmlText, body) {
+      if (!profileHtmlText) return '';
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(profileHtmlText, 'text/html');
+      
+      applyProfileFieldsInDoc(doc, body);
+
+      if (Array.isArray(body.timeline) && body.timeline.length > 0) {
+        const timelineHtml = body.timeline.map((t, i) => {
+          const delay = i === 0 ? '' : ` delay-${Math.min(i, 3)}`;
+          const pTags = String(t.content || '').split('\n').map(line => {
+            const trimmed = line.trim();
+            if (!trimmed) return '';
+            if (trimmed.startsWith('<p>')) return trimmed;
+            return `<p>${trimmed}</p>`;
+          }).filter(Boolean).join('\n                                ');
+
+          return `                        <li class="timeline-item fade-item${delay}">
+                             <span class="timeline-year">${t.year}</span>
+                             <div class="timeline-dot"></div>
+                             <div class="timeline-content">
+                                 ${pTags}
+                             </div>
+                          </li>`;
+        }).join('\n');
+        const tlList = doc.querySelector('.timeline-list');
+        if (tlList) tlList.innerHTML = '\n' + timelineHtml + '\n                    ';
+      }
+
+      if (Array.isArray(body.details)) {
+        body.details.forEach((d, idx) => {
+          const card = doc.querySelectorAll('.details-section .detail-card')[idx];
+          if (card) {
+            const labelEl = card.querySelector('.detail-label');
+            if (labelEl && d.label !== undefined) labelEl.textContent = d.label;
+            const pEl = card.querySelector('p');
+            if (pEl && d.value !== undefined) pEl.textContent = d.value;
+          }
+        });
+      }
+
+      if (Array.isArray(body.skills)) {
+        body.skills.forEach((s, idx) => {
+          const card = doc.querySelectorAll('.skills-section .detail-card')[idx];
+          if (card) {
+            const labelEl = card.querySelector('.detail-label');
+            if (labelEl && s.label !== undefined) labelEl.textContent = s.label;
+            const pEl = card.querySelector('p');
+            if (pEl && s.value !== undefined) pEl.textContent = s.value;
+          }
+        });
+      }
+
+      const doctype = doc.doctype ? `<!DOCTYPE html>\n` : '';
+      return doctype + doc.documentElement.outerHTML;
+    }
+
+    function syncProjectTitleInContent(content, filename, oldTitle, newTitle) {
+      if (!oldTitle || oldTitle === newTitle || !content) return content;
+
+      const patterns = [];
+      const escapeRegExp = (string) => string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      patterns.push(new RegExp(escapeRegExp(oldTitle), 'g'));
+
+      if (filename === 'アントレ部.html') {
+        patterns.push(/アントレプレナーシップ部/g);
+        patterns.push(/アントレプレナーシップ同好会/g);
+        patterns.push(/アントレ同好会/g);
+      } else if (filename === 'KVL.html') {
+        patterns.push(/Kosen Voice Lab/gi);
+      } else if (filename === 'Co-lab.html') {
+        patterns.push(/Co-lab/gi);
+      } else if (filename === 'ハナビト.html') {
+        patterns.push(/Ent-X ハナビト/g);
+        patterns.push(/ハナビト/g);
+      }
+
+      let updatedContent = content;
+      patterns.forEach(pattern => {
+        updatedContent = updatedContent.replace(pattern, newTitle);
+      });
+      return updatedContent;
+    }
+
+    // ─── Init ─────────────────────────────────────────────────
+    async function init() {
+      await fetchSettings();
+      await Promise.all([fetchPosts(), fetchProjects(), fetchProfile()]);
+      updateStats();
+    }
+
+
+    async function fetchPosts() {
+      if (gitHubSyncEnabled) {
+        try {
+          const content = await fetchFileFromGitHub('admin/data/posts.json');
+          posts = content ? JSON.parse(content) : [];
+        } catch (e) {
+          console.warn('Failed to fetch posts.json from GitHub, using default list', e);
+          posts = [];
+        }
+      } else {
+        const r = await fetch(`${API_BASE}/api/posts`);
+        posts = await r.json();
+      }
+      renderPostList();
+    }
+
+    async function fetchProjects() {
+      if (gitHubSyncEnabled) {
+        try {
+          const content = await fetchFileFromGitHub('admin/data/projects.json');
+          projects = content ? JSON.parse(content) : [];
+        } catch (e) {
+          console.warn('Failed to fetch projects.json from GitHub, using default list', e);
+          projects = [];
+        }
+      } else {
+        const r = await fetch(`${API_BASE}/api/projects`);
+        projects = await r.json();
+      }
+      renderProjectList();
+    }
+
+    async function fetchProfile() {
+      try {
+        let p;
+        if (gitHubSyncEnabled) {
+          let profileHtml = await fetchFileFromGitHub('profile.html');
+          if (!profileHtml) {
+            profileHtml = await fetchFileFromGitHub('index.html');
+          }
+          if (profileHtml) {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(profileHtml, 'text/html');
+            
+            const timeline = [];
+            doc.querySelectorAll('.timeline-list li').forEach(el => {
+              const year = el.querySelector('.timeline-year')?.textContent?.trim() || '';
+              const paragraphs = [];
+              el.querySelectorAll('.timeline-content p').forEach(pEl => {
+                paragraphs.push(pEl.innerHTML.trim());
+              });
+              timeline.push({ year, content: paragraphs.join('\n') });
+            });
+
+            const details = [];
+            doc.querySelectorAll('.details-section .detail-card').forEach(el => {
+              details.push({
+                label: el.querySelector('.detail-label')?.textContent?.trim() || '',
+                value: el.querySelector('p')?.textContent?.trim() || ''
+              });
+            });
+
+            const skills = [];
+            doc.querySelectorAll('.skills-section .detail-card').forEach(el => {
+              skills.push({
+                label: el.querySelector('.detail-label')?.textContent?.trim() || '',
+                value: el.querySelector('p')?.textContent?.trim() || ''
+              });
+            });
+
+            p = {
+              tagline: doc.querySelector('.profile-tagline')?.innerHTML?.replace(/<br>/g, '\n') || '',
+              summary: doc.querySelector('.profile-summary')?.innerHTML?.replace(/<br>/g, '\n') || '',
+              photo: doc.querySelector('.profile-photo-img')?.getAttribute('src') || 'images/profile.jpg',
+              email: doc.querySelector('a[href^="mailto:"]')?.getAttribute('href')?.replace('mailto:', '') || '',
+              instagram: doc.querySelectorAll('.sns-links a')[0]?.getAttribute('href') || '#',
+              twitter: doc.querySelectorAll('.sns-links a')[1]?.getAttribute('href') || '#',
+              behance: doc.querySelectorAll('.sns-links a')[2]?.getAttribute('href') || '#',
+              timeline,
+              details,
+              skills
+            };
+          } else {
+            p = { tagline: '', summary: '', photo: 'images/profile.jpg', email: '', instagram: '#', twitter: '#', behance: '#', timeline: [], details: [], skills: [] };
+          }
+        } else {
+          const r = await fetch(`${API_BASE}/api/profile`);
+          p = await r.json();
+        }
+
+        // Basic fields
+        document.getElementById('prof-tagline').value = stripHtmlTags(p.tagline || '');
+        document.getElementById('prof-summary').value = stripHtmlTags(p.summary || '');
+        document.getElementById('prof-photo').value = p.photo || '';
+        document.getElementById('prof-email').value = p.email || '';
+        document.getElementById('prof-instagram').value = p.instagram || '';
+        document.getElementById('prof-twitter').value = p.twitter || '';
+        document.getElementById('prof-behance').value = p.behance || '';
+
+        // Timeline
+        renderTimelineEditor(p.timeline || []);
+
+        // Details & Skills
+        renderDetailCards('details-editor', p.details || []);
+        renderDetailCards('skills-editor', p.skills || []);
+      } catch (e) {
+        console.error('fetchProfile error:', e);
+        toast('プロフィールの読み込みに失敗しました', 'error');
+      }
+    }
+
+    // ─── Timeline Editor ───────────────────────────────────
+    function renderTimelineEditor(items) {
+      const c = document.getElementById('timeline-editor');
+      c.innerHTML = '';
+      if (items.length === 0) {
+        addTimelineItem();
+      } else {
+        items.forEach(t => addTimelineItem(t));
+      }
+    }
+
+    function addTimelineItem(data = null) {
+      const c = document.getElementById('timeline-editor');
+      const div = document.createElement('div');
+      div.className = 'section-block';
+      div.style.marginBottom = '10px';
+      div.innerHTML = `
+        <button class="remove-btn" onclick="this.parentElement.remove()" title="削除">✕</button>
+        <div style="display:grid;grid-template-columns:120px 1fr;gap:12px;align-items:start">
+          <div class="form-group" style="margin-bottom:0">
+            <label>年</label>
+            <input type="text" class="tl-year" placeholder="2024" value="${data?.year || ''}">
+          </div>
+          <div class="form-group" style="margin-bottom:0">
+            <label>内容（1行 = 1段落 / &lt;a href="..."&gt;リンク&lt;/a&gt; も使用可）</label>
+            <textarea class="tl-content" style="min-height:80px">${data?.content || ''}</textarea>
+          </div>
+        </div>`;
+      c.appendChild(div);
+    }
+
+    function getTimelineData() {
+      return Array.from(document.getElementById('timeline-editor').querySelectorAll('.section-block')).map(b => ({
+        year: b.querySelector('.tl-year').value.trim(),
+        content: b.querySelector('.tl-content').value.trim()
+      })).filter(t => t.year);
+    }
+
+    // ─── Details / Skills Editor ───────────────────────────
+    function renderDetailCards(containerId, items) {
+      const c = document.getElementById(containerId);
+      c.innerHTML = '';
+      items.forEach(d => {
+        const div = document.createElement('div');
+        div.style.cssText = 'display:grid;grid-template-columns:1fr 2fr;gap:12px;margin-bottom:10px;align-items:center';
+        div.innerHTML = `
+          <div class="form-group" style="margin-bottom:0">
+            <label>ラベル</label>
+            <input type="text" class="dc-label" value="${escHtml(d.label || '')}">
+          </div>
+          <div class="form-group" style="margin-bottom:0">
+            <label>内容</label>
+            <input type="text" class="dc-value" value="${escHtml(d.value || '')}">
+          </div>`;
+        c.appendChild(div);
+      });
+    }
+
+    function getDetailCards(containerId) {
+      return Array.from(document.getElementById(containerId).querySelectorAll('div[style*="grid"]')).map(row => ({
+        label: row.querySelector('.dc-label')?.value?.trim() || '',
+        value: row.querySelector('.dc-value')?.value?.trim() || ''
+      }));
+    }
+
+    function showSection(name) {
+      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+      document.getElementById('sec-' + name).classList.add('active');
+      document.getElementById('nav-' + name).classList.add('active');
+    }
+
+    function updateStats() {
+      document.getElementById('stat-posts').textContent = posts.length;
+      document.getElementById('stat-projects').textContent = projects.length;
+    }
+
+    // ─── Image Upload ─────────────────────────────────────────
+    async function uploadImage(inputElem, targetInputId) {
+      if (!inputElem.files || inputElem.files.length === 0) return;
+      const file = inputElem.files[0];
+
+      toast('アップロード中...', 'success');
+      try {
+        let imageUrl = '';
+        const method = settings.uploadMethod || 'local';
+
+        if (method === 'local') {
+          if (gitHubSyncEnabled) {
+            imageUrl = await uploadToGitHub(file);
+          } else {
+            imageUrl = await uploadToLocalServer(file);
+          }
+        } else if (method === 'imgbb') {
+          imageUrl = await uploadToImgBB(file, settings.imgbbKey);
+        } else if (method === 'imgur') {
+          imageUrl = await uploadToImgur(file, settings.imgurClientId);
+        } else if (method === 'gdrive') {
+          imageUrl = await uploadToGoogleDrive(file, settings.gdriveClientId);
+        } else {
+          throw new Error('不明なアップロード方式です');
+        }
+
+        // Check if the target is a paragraph textarea (insert at cursor)
+        const target = document.getElementById(targetInputId);
+        if (target.tagName.toLowerCase() === 'textarea' && target.classList.contains('sec-paras')) {
+          const imgText = `[img] ${imageUrl}\n`;
+          const start = target.selectionStart;
+          const end = target.selectionEnd;
+          target.value = target.value.substring(0, start) + imgText + target.value.substring(end);
+        } else {
+          target.value = imageUrl;
+        }
+        toast('アップロード成功', 'success');
+      } catch (err) {
+        toast('アップロード失敗: ' + err.message, 'error');
+        console.error(err);
+      }
+    }
+
+    async function uploadToLocalServer(file) {
+      const formData = new FormData();
+      formData.append('file', file);
+      const res = await fetch(`${API_BASE}/api/upload`, { method: 'POST', body: formData });
+      if (!res.ok) throw new Error('Local upload failed');
+      const data = await res.json();
+      return data.url;
+    }
+
+    async function uploadToImgBB(file, apiKey) {
+      if (!apiKey) throw new Error('ImgBB APIキーが設定されていません。Settingsタブで設定してください。');
+      const formData = new FormData();
+      formData.append('image', file);
+      const res = await fetch(`https://api.imgbb.com/1/upload?key=${apiKey}`, {
+        method: 'POST',
+        body: formData
+      });
+      if (!res.ok) throw new Error('ImgBB upload failed');
+      const data = await res.json();
+      return data.data.url;
+    }
+
+    async function uploadToImgur(file, clientId) {
+      if (!clientId) throw new Error('Imgur Client IDが設定されていません。Settingsタブで設定してください。');
+      const formData = new FormData();
+      formData.append('image', file);
+      const res = await fetch('https://api.imgur.com/3/image', {
+        method: 'POST',
+        headers: {
+          Authorization: `Client-ID ${clientId}`
+        },
+        body: formData
+      });
+      if (!res.ok) throw new Error('Imgur upload failed');
+      const data = await res.json();
+      return data.data.link;
+    }
+
+    // Google Drive direct upload
+    let gdriveAccessToken = null;
+    function getGDriveToken(clientId) {
+      return new Promise((resolve, reject) => {
+        if (gdriveAccessToken) {
+          resolve(gdriveAccessToken);
+          return;
+        }
+        if (!clientId) {
+          reject(new Error('Google Drive Client IDが設定されていません。Settingsタブで設定してください。'));
+          return;
+        }
+        if (typeof google === 'undefined' || !google.accounts) {
+          reject(new Error('Google API スクリプトの読み込みが完了していません。しばらく経ってから再度お試しください。'));
+          return;
+        }
+
+        try {
+          const client = google.accounts.oauth2.initTokenClient({
+            client_id: clientId,
+            scope: 'https://www.googleapis.com/auth/drive.file',
+            callback: (tokenResponse) => {
+              if (tokenResponse.access_token) {
+                gdriveAccessToken = tokenResponse.access_token;
+                resolve(gdriveAccessToken);
+              } else {
+                reject(new Error('Google Driveの承認が拒否されました。'));
+              }
+            },
+            error_callback: (err) => reject(new Error('OAuth エラー: ' + err.message))
+          });
+          client.requestAccessToken();
+        } catch (e) {
+          reject(e);
+        }
+      });
+    }
+
+    async function uploadToGoogleDrive(file, clientId) {
+      const token = await getGDriveToken(clientId);
+
+      // Step 1: Upload multipart
+      const metadata = {
+        name: `${Date.now()}-${file.name}`,
+        mimeType: file.type
+      };
+
+      const formData = new FormData();
+      formData.append('metadata', new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
+      formData.append('file', file);
+
+      const uploadRes = await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`
+        },
+        body: formData
+      });
+
+      if (!uploadRes.ok) {
+        if (uploadRes.status === 401) {
+          gdriveAccessToken = null;
+          throw new Error('認証トークンの期限が切れました。再度アップロードボタンを押して再認証してください。');
+        }
+        throw new Error('Google Driveへのファイルアップロードに失敗しました。');
+      }
+
+      const fileData = await uploadRes.json();
+      const fileId = fileData.id;
+
+      // Step 2: Set permissions to anyone reader
+      const permRes = await fetch(`https://www.googleapis.com/drive/v3/files/${fileId}/permissions`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          role: 'reader',
+          type: 'anyone'
+        })
+      });
+
+      if (!permRes.ok) {
+        throw new Error('Google Driveファイルの公開権限設定に失敗しました。');
+      }
+
+      return `https://lh3.googleusercontent.com/d/${fileId}`;
+    }
+
+    // ─── Settings ──────────────────────────────────────────
+    function toggleUploadMethodUI() {
+      const method = document.getElementById('setting-upload-method').value;
+      document.getElementById('setting-card-imgbb').style.display = method === 'imgbb' ? 'block' : 'none';
+      document.getElementById('setting-card-imgur').style.display = method === 'imgur' ? 'block' : 'none';
+      document.getElementById('setting-card-gdrive').style.display = method === 'gdrive' ? 'block' : 'none';
+    }
+
+    async function fetchSettings() {
+      try {
+        const r = await fetch(`${API_BASE}/api/settings`);
+        if (r.ok) {
+          settings = await r.json();
+        }
+      } catch (e) {
+        console.warn('API Settings fetch failed, falling back to localStorage:', e);
+        const saved = localStorage.getItem('portfolio_settings');
+        if (saved) {
+          settings = JSON.parse(saved);
+        }
+      }
+
+      document.getElementById('setting-upload-method').value = settings.uploadMethod || 'local';
+      document.getElementById('setting-imgbb-key').value = settings.imgbbKey || '';
+      document.getElementById('setting-imgur-id').value = settings.imgurClientId || '';
+      document.getElementById('setting-gdrive-client-id').value = settings.gdriveClientId || '';
+      toggleUploadMethodUI();
+
+      const savedGit = localStorage.getItem('portfolio_github_settings');
+      if (savedGit) {
+        const gitSettings = JSON.parse(savedGit);
+        document.getElementById('setting-github-sync').checked = !!gitSettings.enabled;
+        document.getElementById('setting-github-user').value = gitSettings.user || 'Noi-archi';
+        document.getElementById('setting-github-repo').value = gitSettings.repo || 'portfolio';
+        document.getElementById('setting-github-branch').value = gitSettings.branch || 'main';
+        document.getElementById('setting-github-token').value = gitSettings.token || '';
+        
+        gitHubSyncEnabled = !!gitSettings.enabled;
+        gitHubUser = gitSettings.user || 'Noi-archi';
+        gitHubRepo = gitSettings.repo || 'portfolio';
+        gitHubBranch = gitSettings.branch || 'main';
+        gitHubToken = gitSettings.token || '';
+      } else {
+        document.getElementById('setting-github-user').value = 'Noi-archi';
+        document.getElementById('setting-github-repo').value = 'portfolio';
+        document.getElementById('setting-github-branch').value = 'main';
+      }
+    }
+
+    async function saveSettings() {
+      const uploadMethod = document.getElementById('setting-upload-method').value;
+      const imgbbKey = document.getElementById('setting-imgbb-key').value.trim();
+      const imgurClientId = document.getElementById('setting-imgur-id').value.trim();
+      const gdriveClientId = document.getElementById('setting-gdrive-client-id').value.trim();
+
+      settings = { uploadMethod, imgbbKey, imgurClientId, gdriveClientId };
+
+      let savedOnServer = false;
+      try {
+        const r = await fetch(`${API_BASE}/api/settings`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(settings)
+        });
+        if (r.ok) savedOnServer = true;
+      } catch (e) {
+        console.warn('Failed to save settings on server:', e);
+      }
+
+      localStorage.setItem('portfolio_settings', JSON.stringify(settings));
+
+      const gitHubSync = document.getElementById('setting-github-sync').checked;
+      const gitHubUserVal = document.getElementById('setting-github-user').value.trim() || 'Noi-archi';
+      const gitHubRepoVal = document.getElementById('setting-github-repo').value.trim() || 'portfolio';
+      const gitHubBranchVal = document.getElementById('setting-github-branch').value.trim() || 'main';
+      const gitHubTokenVal = document.getElementById('setting-github-token').value.trim();
+
+      gitHubSyncEnabled = gitHubSync;
+      gitHubUser = gitHubUserVal;
+      gitHubRepo = gitHubRepoVal;
+      gitHubBranch = gitHubBranchVal;
+      gitHubToken = gitHubTokenVal;
+
+      localStorage.setItem('portfolio_github_settings', JSON.stringify({
+        enabled: gitHubSync,
+        user: gitHubUserVal,
+        repo: gitHubRepoVal,
+        branch: gitHubBranchVal,
+        token: gitHubTokenVal
+      }));
+
+      if (savedOnServer) {
+        toast('設定を保存しました', 'success');
+      } else {
+        toast('設定をローカルブラウザに保存しました', 'success');
+      }
+    }
+    // For inline images in sections
+    async function uploadSectionImage(inputElem, textareaBtnId) {
+      await uploadImage(inputElem, textareaBtnId);
+    }
+
+    // ─── Section Editor UI ────────────────────────────────────
+    function addSection(type, data = null) {
+      const containerId = type === 'journal' ? 'post-sections-container' : 'proj-sections-container';
+      const id = Date.now() + Math.random();
+      const div = document.createElement('div');
+      div.className = 'section-block ' + type + '-section';
+      div.innerHTML = `
+    <button class="remove-btn" onclick="this.parentElement.remove()">✕</button>
+    <div class="form-group" style="margin-bottom:12px">
+      <label>見出し（省略可）</label>
+      <input type="text" class="sec-heading" placeholder="見出しテキスト" value="${data?.heading || ''}">
+    </div>
+    <div class="form-group" style="margin-bottom:0">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <label>段落テキスト（1行 = 1段落）</label>
+        <div class="file-input-btn btn btn-secondary btn-sm">
+          写真(本文)追加
+          <input type="file" onchange="uploadSectionImage(this, 'para-${id}')" accept="image/*">
+        </div>
+      </div>
+      <textarea id="para-${id}" class="sec-paras" style="min-height:120px; margin-top:6px;" placeholder="段落1&#10;段落2&#10;[img] ../images/uploads/...">${data?.paragraphs?.join('\n') || ''}</textarea>
+    </div>`;
+      document.getElementById(containerId).appendChild(div);
+    }
+
+    function getSections(type) {
+      const containerId = type === 'journal' ? 'post-sections-container' : 'proj-sections-container';
+      return Array.from(document.getElementById(containerId).querySelectorAll('.section-block')).map(b => ({
+        heading: b.querySelector('.sec-heading').value.trim(),
+        paragraphs: b.querySelector('.sec-paras').value.split('\n').map(l => l.trim()).filter(Boolean)
+      }));
+    }
+
+    function cancelEditor(type) {
+      if (type === 'journal') {
+        document.getElementById('post-editor').style.display = 'none';
+        document.getElementById('btn-new-post').style.display = '';
+      } else {
+        document.getElementById('project-editor').style.display = 'none';
+        document.getElementById('btn-new-project').style.display = '';
+      }
+    }
+
+    // ─── Journal ──────────────────────────────────────────────
+    function renderPostList() {
+      const el = document.getElementById('post-list');
+      el.innerHTML = posts.length === 0 ? '<div class="card" style="text-align:center;color:var(--muted)">まだ記事がありません</div>' :
+        posts.map(p => `
+    <div class="list-item">
+      <img class="list-thumb" src="${p.heroImg}" onerror="this.src='https://via.placeholder.com/64x44/333/666?text=Image'">
+      <div class="list-meta">
+        <div class="list-meta-title">${p.title}</div>
+        <div class="list-meta-sub">${p.date}</div>
+      </div>
+      <div class="list-actions">
+        <button class="btn btn-secondary btn-sm" onclick="editPost(${p.id})">編集</button>
+        <button class="btn btn-danger btn-sm" onclick="deletePost(${p.id})">削除</button>
+      </div>
+    </div>`).join('');
+    }
+
+    function showEditor(type, id = null) {
+      if (type === 'journal') {
+        document.getElementById('post-editor').style.display = 'block';
+        document.getElementById('btn-new-post').style.display = 'none';
+        const container = document.getElementById('post-sections-container');
+        container.innerHTML = '';
+
+        if (id) {
+          const p = posts.find(x => x.id === id);
+          document.getElementById('editor-title-label').textContent = '記事を編集';
+          document.getElementById('edit-post-id').value = id;
+          document.getElementById('post-title').value = p.title;
+          document.getElementById('post-date').value = p.date;
+          document.getElementById('post-lead').value = p.lead;
+          document.getElementById('post-hero').value = p.heroImg;
+          (p.sections || []).forEach(s => addSection('journal', s));
+        } else {
+          document.getElementById('editor-title-label').textContent = '新規投稿';
+          document.getElementById('edit-post-id').value = '';
+          document.getElementById('post-title').value = '';
+          document.getElementById('post-date').value = todayStr();
+          document.getElementById('post-lead').value = '';
+          document.getElementById('post-hero').value = '';
+          addSection('journal');
+        }
+      } else {
+        document.getElementById('project-editor').style.display = 'block';
+        document.getElementById('btn-new-project').style.display = 'none';
+        const container = document.getElementById('proj-sections-container');
+        container.innerHTML = '';
+
+        if (id) {
+          const p = projects.find(x => x.id === id);
+          document.getElementById('proj-editor-title-label').textContent = 'プロジェクト編集';
+          document.getElementById('edit-proj-id').value = id;
+          document.getElementById('proj-title').value = p.title;
+          document.getElementById('proj-number').value = p.number;
+          document.getElementById('proj-tagline').value = p.tagline || '';
+          document.getElementById('proj-desc').value = p.description || '';
+          document.getElementById('proj-hero').value = p.image || '';
+          (p.sections || []).forEach(s => addSection('project', s));
+        } else {
+          document.getElementById('proj-editor-title-label').textContent = '新規プロジェクト';
+          document.getElementById('edit-proj-id').value = '';
+          document.getElementById('proj-title').value = '';
+          document.getElementById('proj-number').value = `0${projects.length + 1} / NEW`;
+          document.getElementById('proj-tagline').value = '';
+          document.getElementById('proj-desc').value = '';
+          document.getElementById('proj-hero').value = '';
+          addSection('project');
+        }
+      }
+    }
+
+    function editPost(id) { showEditor('journal', id); }
+
+    async function savePost() {
+      const id = document.getElementById('edit-post-id').value;
+      const body = {
+        title: document.getElementById('post-title').value,
+        date: document.getElementById('post-date').value,
+        lead: document.getElementById('post-lead').value,
+        heroImg: document.getElementById('post-hero').value || `https://picsum.photos/seed/j${Date.now()}/1600/900?grayscale`,
+        sections: getSections('journal')
+      };
+      if (!body.title) return toast('タイトルを入力してください', 'error');
+
+      if (gitHubSyncEnabled) {
+        toast('GitHubへ保存中...', 'success');
+        try {
+          let updatedPosts = [...posts];
+          let post;
+          if (id) {
+            const idx = updatedPosts.findIndex(p => p.id === parseInt(id));
+            if (idx === -1) throw new Error('Post not found');
+            post = { ...updatedPosts[idx], ...body, id: updatedPosts[idx].id, filename: updatedPosts[idx].filename };
+            updatedPosts[idx] = post;
+          } else {
+            const newId = updatedPosts.length > 0 ? Math.max(...updatedPosts.map(p => p.id)) + 1 : 1;
+            const filename = `post-${pad(newId)}.html`;
+            post = {
+              id: newId,
+              filename,
+              ...body
+            };
+            updatedPosts.unshift(post);
+          }
+
+          const postHtml = generatePostHTML(post, updatedPosts);
+          await saveFileToGitHub(`Journal/${post.filename}`, postHtml, `save post: ${post.title}`);
+
+          const journalListHtml = generateJournalListHTML(updatedPosts);
+          await saveFileToGitHub('Journal/journal.html', journalListHtml, `update journal list`);
+
+          await saveFileToGitHub('admin/data/posts.json', JSON.stringify(updatedPosts, null, 2), `update posts database`);
+
+          const indexHtml = await fetchFileFromGitHub('index.html');
+          if (indexHtml) {
+            const updatedIndex = syncIndexHtml(indexHtml, projects, updatedPosts);
+            await saveFileToGitHub('index.html', updatedIndex, `sync latest posts to index.html`);
+          }
+
+          posts = updatedPosts;
+          toast('記事をGitHubに保存しました！', 'success');
+          cancelEditor('journal');
+          renderPostList();
+          updateStats();
+        } catch (e) {
+          console.error(e);
+          toast('GitHubへの保存に失敗しました: ' + e.message, 'error');
+        }
+      } else {
+        const url = id ? `${API_BASE}/api/posts/${id}` : `${API_BASE}/api/posts`;
+        const r = await fetch(url, { method: id ? 'PUT' : 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+        if (r.ok) {
+          toast('記事を保存しました', 'success');
+          cancelEditor('journal');
+          await fetchPosts();
+          updateStats();
+        } else { toast('エラーが発生しました', 'error'); }
+      }
+    }
+
+    async function deletePost(id) {
+      if (!confirm('この記事を削除しますか？')) return;
+      if (gitHubSyncEnabled) {
+        toast('GitHubから削除中...', 'success');
+        try {
+          let updatedPosts = [...posts];
+          const idx = updatedPosts.findIndex(p => p.id === parseInt(id));
+          if (idx === -1) throw new Error('Post not found');
+          const post = updatedPosts[idx];
+
+          await deleteFileFromGitHub(`Journal/${post.filename}`, `delete post: ${post.title}`);
+
+          updatedPosts.splice(idx, 1);
+
+          const journalListHtml = generateJournalListHTML(updatedPosts);
+          await saveFileToGitHub('Journal/journal.html', journalListHtml, `update journal list after delete`);
+
+          await saveFileToGitHub('admin/data/posts.json', JSON.stringify(updatedPosts, null, 2), `update posts database after delete`);
+
+          const indexHtml = await fetchFileFromGitHub('index.html');
+          if (indexHtml) {
+            const updatedIndex = syncIndexHtml(indexHtml, projects, updatedPosts);
+            await saveFileToGitHub('index.html', updatedIndex, `sync index.html after post delete`);
+          }
+
+          posts = updatedPosts;
+          toast('削除しました', 'success');
+          renderPostList();
+          updateStats();
+        } catch (e) {
+          console.error(e);
+          toast('GitHubからの削除に失敗しました: ' + e.message, 'error');
+        }
+      } else {
+        const r = await fetch(`${API_BASE}/api/posts/${id}`, { method: 'DELETE' });
+        if (r.ok) { toast('削除しました', 'success'); await fetchPosts(); updateStats(); }
+      }
+    }
+
+    // ─── Projects ─────────────────────────────────────────────
+    function renderProjectList() {
+      const el = document.getElementById('project-list');
+      el.innerHTML = projects.length === 0 ? '<div class="card" style="text-align:center;color:var(--muted)">まだプロジェクトがありません</div>' :
+        projects.map(p => `
+    <div class="list-item">
+      <img class="list-thumb" src="${p.image}" onerror="this.src='https://via.placeholder.com/64x44/333/666?text=Image'">
+      <div class="list-meta">
+        <div class="badge">${p.number}</div>
+        <div class="list-meta-title" style="margin-top:6px">${p.title}</div>
+      </div>
+      <div class="list-actions">
+        <button class="btn btn-secondary btn-sm" onclick="editProject(${p.id})">編集</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteProject(${p.id})">削除</button>
+      </div>
+    </div>`).join('');
+    }
+
+    function editProject(id) { showEditor('project', id); }
+
+    async function saveProject() {
+      const id = document.getElementById('edit-proj-id').value;
+      const body = {
+        title: document.getElementById('proj-title').value,
+        number: document.getElementById('proj-number').value,
+        tagline: document.getElementById('proj-tagline').value,
+        description: document.getElementById('proj-desc').value,
+        image: document.getElementById('proj-hero').value || `https://picsum.photos/seed/p${Date.now()}/1600/900?grayscale`,
+        sections: getSections('project')
+      };
+      if (!body.title) return toast('タイトルを入力してください', 'error');
+
+      if (gitHubSyncEnabled) {
+        toast('GitHubへ保存中...', 'success');
+        try {
+          let updatedProjects = [...projects];
+          let project;
+          let oldTitle = null;
+          if (id) {
+            const idx = updatedProjects.findIndex(p => p.id === parseInt(id));
+            if (idx === -1) throw new Error('Project not found');
+            oldTitle = updatedProjects[idx].title;
+            project = { ...updatedProjects[idx], ...body, id: updatedProjects[idx].id, filename: updatedProjects[idx].filename };
+            updatedProjects[idx] = project;
+          } else {
+            const newId = updatedProjects.length > 0 ? Math.max(...updatedProjects.map(p => p.id)) + 1 : 1;
+            const filename = `project-${pad(newId)}.html`;
+            project = {
+              id: newId,
+              filename,
+              ...body
+            };
+            updatedProjects.push(project);
+          }
+
+          let indexHtml = await fetchFileFromGitHub('index.html');
+          let profileHtml = await fetchFileFromGitHub('profile.html');
+          let projectsHtml = await fetchFileFromGitHub('Project/projects.html');
+          
+          if (oldTitle && oldTitle !== project.title) {
+            indexHtml = syncProjectTitleInContent(indexHtml, project.filename, oldTitle, project.title);
+            profileHtml = syncProjectTitleInContent(profileHtml, project.filename, oldTitle, project.title);
+            projectsHtml = syncProjectTitleInContent(projectsHtml, project.filename, oldTitle, project.title);
+          }
+
+          let projectPageHtml = await fetchFileFromGitHub(`Project/${project.filename}`);
+          const updatedPageHtml = updateProjectPageHTML(projectPageHtml, project, updatedProjects);
+          await saveFileToGitHub(`Project/${project.filename}`, updatedPageHtml, `save project: ${project.title}`);
+
+          const updatedListHtml = generateProjectListHTML(updatedProjects);
+          await saveFileToGitHub('Project/projects.html', updatedListHtml, `update projects list`);
+
+          await saveFileToGitHub('admin/data/projects.json', JSON.stringify(updatedProjects, null, 2), `update projects database`);
+
+          if (indexHtml) {
+            const updatedIndex = syncIndexHtml(indexHtml, updatedProjects, posts);
+            await saveFileToGitHub('index.html', updatedIndex, `sync latest projects to index.html`);
+          }
+
+          if (profileHtml && oldTitle && oldTitle !== project.title) {
+            await saveFileToGitHub('profile.html', profileHtml, `sync project title in profile.html`);
+          }
+
+          projects = updatedProjects;
+          toast('プロジェクトをGitHubに保存しました！', 'success');
+          cancelEditor('project');
+          renderProjectList();
+          updateStats();
+        } catch (e) {
+          console.error(e);
+          toast('GitHubへの保存に失敗しました: ' + e.message, 'error');
+        }
+      } else {
+        const url = id ? `${API_BASE}/api/projects/${id}` : `${API_BASE}/api/projects`;
+        const r = await fetch(url, { method: id ? 'PUT' : 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+        if (r.ok) {
+          toast('プロジェクトを保存しました', 'success');
+          cancelEditor('project');
+          await fetchProjects();
+          updateStats();
+        } else { toast('エラーが発生しました', 'error'); }
+      }
+    }
+
+    async function deleteProject(id) {
+      if (!confirm('このプロジェクトを削除しますか？')) return;
+      if (gitHubSyncEnabled) {
+        toast('GitHubから削除中...', 'success');
+        try {
+          let updatedProjects = [...projects];
+          const idx = updatedProjects.findIndex(p => p.id === parseInt(id));
+          if (idx === -1) throw new Error('Project not found');
+          const project = updatedProjects[idx];
+
+          await deleteFileFromGitHub(`Project/${project.filename}`, `delete project: ${project.title}`);
+
+          updatedProjects.splice(idx, 1);
+
+          const listHtml = generateProjectListHTML(updatedProjects);
+          await saveFileToGitHub('Project/projects.html', listHtml, `update projects list after delete`);
+
+          await saveFileToGitHub('admin/data/projects.json', JSON.stringify(updatedProjects, null, 2), `update projects database after delete`);
+
+          const indexHtml = await fetchFileFromGitHub('index.html');
+          if (indexHtml) {
+            const updatedIndex = syncIndexHtml(indexHtml, updatedProjects, posts);
+            await saveFileToGitHub('index.html', updatedIndex, `sync index.html after project delete`);
+          }
+
+          projects = updatedProjects;
+          toast('削除しました', 'success');
+          renderProjectList();
+          updateStats();
+        } catch (e) {
+          console.error(e);
+          toast('GitHubからの削除に失敗しました: ' + e.message, 'error');
+        }
+      } else {
+        const r = await fetch(`${API_BASE}/api/projects/${id}`, { method: 'DELETE' });
+        if (r.ok) { toast('削除しました', 'success'); await fetchProjects(); updateStats(); }
+      }
+    }
+
+    // ─── Profile ──────────────────────────────────────────────
+    async function saveProfile() {
+      const body = {
+        tagline: document.getElementById('prof-tagline').value,
+        summary: document.getElementById('prof-summary').value,
+        photo: document.getElementById('prof-photo').value,
+        email: document.getElementById('prof-email').value,
+        instagram: document.getElementById('prof-instagram').value,
+        twitter: document.getElementById('prof-twitter').value,
+        behance: document.getElementById('prof-behance').value,
+        timeline: getTimelineData(),
+        details: getDetailCards('details-editor'),
+        skills: getDetailCards('skills-editor'),
+      };
+
+      if (gitHubSyncEnabled) {
+        toast('GitHubのプロフィールを更新中...', 'success');
+        try {
+          let indexHtml = await fetchFileFromGitHub('index.html');
+          if (indexHtml) {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(indexHtml, 'text/html');
+            applyProfileFieldsInDoc(doc, body);
+            const doctype = doc.doctype ? `<!DOCTYPE html>\n` : '';
+            indexHtml = doctype + doc.documentElement.outerHTML;
+            await saveFileToGitHub('index.html', indexHtml, 'update profile basic info in index.html');
+          }
+
+          let profileHtml = await fetchFileFromGitHub('profile.html');
+          if (profileHtml) {
+            const updatedProfile = updateProfileHtml(profileHtml, body);
+            await saveFileToGitHub('profile.html', updatedProfile, 'update full profile in profile.html');
+          }
+
+          toast('プロフィールをGitHubに保存しました！', 'success');
+        } catch (e) {
+          console.error(e);
+          toast('GitHubへの保存に失敗しました: ' + e.message, 'error');
+        }
+      } else {
+        try {
+          const r = await fetch(`${API_BASE}/api/profile`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body)
+          });
+          if (r.ok) toast('プロフィールを更新しました', 'success');
+          else toast('エラーが発生しました', 'error');
+        } catch (e) {
+          toast('サーバーに接続できません', 'error');
+        }
+      }
+    }
+
+    // ─── Utils ────────────────────────────────────────────────
+    function toast(msg, type = 'success') {
+      const c = document.getElementById('toast-container');
+      const t = document.createElement('div');
+      t.className = `toast ${type}`;
+      t.textContent = msg;
+      c.appendChild(t);
+      setTimeout(() => t.remove(), 3000);
+    }
+    function todayStr() {
+      const d = new Date();
+      return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')}`;
+    }
+    // Strip HTML tags for plain-text display in inputs
+    function stripHtmlTags(html) {
+      return html.replace(/<br\s*\/?>/gi, '\n').replace(/<[^>]+>/g, '').trim();
+    }
+    // Escape HTML special chars for use in innerHTML attributes
+    function escHtml(str) {
+      return String(str).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    init();
+  </script>
+</body>
+
+</html>
